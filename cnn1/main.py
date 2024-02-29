@@ -9,17 +9,19 @@ MAX_SEQUENCE_LENGTH = 100
 
 # Descargar el archivo CSV desde Google Drive
 url = 'https://drive.google.com/uc?id=1Sf7AjBoEC1-ZtkrmAnq0frTWMAuh5osb'
-output = 'train.csv'
-gdown.download(url, output, quiet=False)
+output_train = 'train.csv'
+gdown.download(url, output_train, quiet=False)
 
-train = pd.read_csv(output)
+# Descargar el modelo desde Google Drive
+url = 'https://drive.google.com/uc?id=1oQvoINtsezowOXi42g1BiiHJ5mjpqoye'
+output_model = 'modelo_entrenado.h5'
+gdown.download(url, output_model, quiet=False)
+
+train = pd.read_csv(output_train)
 sentences = train["comment_text"].fillna("DUMMY_VALUE").values
 
-# Cargar el modelo
-def load_h5_model():
-    return load_model("modelo_entrenado.h5")
 
-model = load_h5_model()
+model = load_model(output_model)
 
 MAX_SEQUENCE_LENGTH = 100
 
