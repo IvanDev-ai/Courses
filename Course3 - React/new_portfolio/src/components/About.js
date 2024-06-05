@@ -1,61 +1,46 @@
-import React, { useEffect, useRef, useState } from "react";
-import { motion, useAnimation } from "framer-motion";
+import React, { useEffect, useState, useRef } from "react";
 import './About.css';
+import Image from "./img/me.png";
+import { Parallax } from 'react-scroll-parallax';
 
 const About = () => {
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [startAnimation, setStartAnimation] = useState(false);
   const aboutRef = useRef(null);
-  const controls = useAnimation();
-  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      const aboutSection = aboutRef.current;
-      if (!aboutSection) return;
+      const position = window.scrollY;
+      const aboutTop = aboutRef.current.getBoundingClientRect().top;
 
-      const { top, height } = aboutSection.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      if (top <= windowHeight * 0.75 && top + height >= 0) {
-        setScrolled(true);
+      if (aboutTop <= 0) {
+        setStartAnimation(true);
       } else {
-        setScrolled(false);
+        setStartAnimation(false);
       }
+
+      setScrollPosition(position);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  useEffect(() => {
-    if (scrolled) {
-      controls.start({
-        x: -aboutRef.current.offsetWidth / 2 + 50, // Adjust to position as needed
-        y: -aboutRef.current.offsetHeight / 2 + 50, // Adjust to position as needed
-        transition: { duration: 0.5 },
-      });
-    } else {
-      controls.start({
-        x: 0,
-        y: 0,
-        transition: { duration: 0.5 },
-      });
-    }
-  }, [scrolled, controls]);
-
   return (
-    <div ref={aboutRef} className="about-section min-h-screen flex items-center justify-center bg-white text-black">
-      <div className="content p-8 max-w-2xl relative">
-        <motion.h2
-          className="title text-4xl font-bold mb-4"
-          animate={controls}
-        >
-          Sobre Mí
-        </motion.h2>
-        <p className="text-lg">
-          Este apartado es dedicado a información sobre mí.
-        </p>
+    <div ref={aboutRef} className="bg-about">
+      <div className="content mt-36">
+        <Parallax speed={startAnimation ? -100 : 0}>
+          <h2 className={`text-4xl font-bold mb-10 ${startAnimation ? 'start-animation' : ''}`} style={{ transform: `translateX(-${startAnimation ? scrollPosition / 2 : 0}px)` }}>Sobre Mí</h2>
+        </Parallax>
+        <p className="text-lg mb-10">Estudiante de 21 años de edad, con gran pasión por el mundo de la Inteligencia Artificial, ya sea Deep Learning, Machine Learning o NLP. Centrado en mis estudios y profesión. Eficiente y productivo.</p>
+        <div className="flex flex-col justify-center items-center p-6">
+          <div className="w-200 h-64 rounded-lg shadow-lg border border-gray-300 mb-4 opacity-0">
+            <img src={Image} alt="Imagen 1" className="w-full h-full rounded-lg" />
+          </div>
+        </div>
       </div>
     </div>
   );
